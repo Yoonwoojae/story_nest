@@ -103,19 +103,151 @@ const commonOptions = {
     },
 };
 
-function DetailModal({ isOpen, onClose, title, children }) {
+const dashboardData = [
+    {
+        title: '이번 달 독서량',
+        value: '12권',
+        change: '+3권 ↑',
+        description: '지난 달 대비 33% 증가',
+        gradient: 'from-indigo-500 to-indigo-600',
+        modalContent: (
+            <div className="space-y-6">
+                <div>
+                    <h4 className="font-semibold mb-4">월별 독서량 추이</h4>
+                    <div className="h-64">
+                        <Line data={readingData} options={commonOptions} />
+                    </div>
+                </div>
+                <div>
+                    <h4 className="font-semibold mb-2">최근 읽은 책</h4>
+                    <ul className="space-y-2">
+                        <li className="flex justify-between">
+                            <span>해리포터와 마법사의 돌</span>
+                            <span className="text-gray-500">2024.01.15</span>
+                        </li>
+                        <li className="flex justify-between">
+                            <span>어린왕자</span>
+                            <span className="text-gray-500">2024.01.12</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        )
+    },
+    {
+        title: '총 학습 시간',
+        value: '32시간',
+        change: '+5h ↑',
+        description: '일일 평균 1.2시간',
+        gradient: 'from-emerald-500 to-emerald-600',
+        modalContent: (
+            <div className="space-y-6">
+                <div>
+                    <h4 className="font-semibold mb-4">주간 학습 시간</h4>
+                    <div className="h-64">
+                        <Bar data={studyTimeData} options={commonOptions} />
+                    </div>
+                </div>
+                <div>
+                    <h4 className="font-semibold mb-2">학습 통계</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-emerald-50 p-4 rounded-lg">
+                            <p className="text-sm text-emerald-600">최장 학습 시간</p>
+                            <p className="text-2xl font-bold text-emerald-700">3.0시간</p>
+                        </div>
+                        <div className="bg-emerald-50 p-4 rounded-lg">
+                            <p className="text-sm text-emerald-600">주간 목표 달성</p>
+                            <p className="text-2xl font-bold text-emerald-700">85%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    },
+    {
+        title: '독해력 점수',
+        value: '82점',
+        change: '+5점 ↑',
+        description: '상위 15% 수준',
+        gradient: 'from-violet-500 to-violet-600',
+        modalContent: (
+            <div className="space-y-6">
+                <div>
+                    <h4 className="font-semibold mb-4">영역별 독해력 분석</h4>
+                    <div className="h-64">
+                        <Radar data={comprehensionData} options={commonOptions} />
+                    </div>
+                </div>
+                <div>
+                    <h4 className="font-semibold mb-2">독해력 성장</h4>
+                    <div className="bg-violet-50 p-4 rounded-lg">
+                        <p className="text-sm text-violet-600">지난 달 대비 성장률</p>
+                        <p className="text-2xl font-bold text-violet-700">+12%</p>
+                    </div>
+                </div>
+            </div>
+        )
+    },
+    {
+        title: '획득한 뱃지',
+        value: '8개',
+        change: 'New!',
+        description: '신규 뱃지 획득!',
+        gradient: 'from-amber-500 to-amber-600',
+        modalContent: (
+            <div className="space-y-6">
+                <div>
+                    <h4 className="font-semibold mb-4">카테고리별 뱃지 현황</h4>
+                    <div className="h-64">
+                        <Doughnut data={badgeData} options={commonOptions} />
+                    </div>
+                </div>
+                <div>
+                    <h4 className="font-semibold mb-2">최근 획득한 뱃지</h4>
+                    <div className="bg-amber-50 p-4 rounded-lg">
+                        <p className="text-sm text-amber-600">독서 마라토너</p>
+                        <p className="text-lg text-amber-700">30일 연속 독서 달성</p>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+];
+
+function DetailModal({ isOpen, onClose, title, children, onPrev, onNext, hasPrev, hasNext }) {
     if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-            {/* 배경 오버레이 */}
             {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
             <div
                 className="absolute inset-0 bg-black/50 backdrop-blur-sm"
                 onClick={onClose}
             />
-            {/* 모달 컨텐츠 */}
             <div className="relative bg-white rounded-2xl w-full max-w-2xl m-4 shadow-xl">
+                {/* 좌우 네비게이션 버튼 */}
+                {hasPrev && (
+                    <button
+                        onClick={onPrev}
+                        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors z-50"
+                    >
+                        <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                )}
+                {hasNext && (
+                    <button
+                        onClick={onNext}
+                        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors z-50"
+                    >
+                        <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                )}
+
+                {/* 헤더 */}
                 <div className="flex items-center justify-between p-6 border-b">
                     <h3 className="text-2xl font-bold text-gray-900">{title}</h3>
                     <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
@@ -127,17 +259,41 @@ function DetailModal({ isOpen, onClose, title, children }) {
                 <div className="p-6">
                     {children}
                 </div>
+
+                {/* 하단 인디케이터 */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+                    {[0, 1, 2, 3].map((index) => (
+                        <div
+                            key={index}
+                            className={`w-2 h-2 rounded-full ${
+                                title === dashboardData[index].title
+                                    ? 'bg-indigo-600'
+                                    : 'bg-gray-300'
+                            }`}
+                        />
+                    ))}
+                </div>
             </div>
         </div>
     );
 }
 
-function DashboardCard({ title, value, change, description, gradient, modalContent }) {
+function DashboardCard({ title, value, change, description, gradient, modalContent, index, totalCards }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentIndex, setCurrentIndex] = useState(index);
+
+    const handlePrev = () => {
+        setCurrentIndex((prev) => (prev - 1 + totalCards) % totalCards);
+    };
+
+    const handleNext = () => {
+        setCurrentIndex((prev) => (prev + 1) % totalCards);
+    };
 
     return (
         <>
             <div className={`bg-gradient-to-br ${gradient} rounded-xl p-6 text-white`}>
+                {/* 카드 내용은 동일 */}
                 <div className="flex justify-between items-start">
                     <div>
                         <p className="text-white/90">{title}</p>
@@ -151,7 +307,10 @@ function DashboardCard({ title, value, change, description, gradient, modalConte
                     {description}
                 </div>
                 <button
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => {
+                        setCurrentIndex(index);
+                        setIsModalOpen(true);
+                    }}
                     className="mt-4 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors"
                 >
                     상세보기
@@ -161,130 +320,24 @@ function DashboardCard({ title, value, change, description, gradient, modalConte
             <DetailModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                title={title}
+                title={dashboardData[currentIndex].title}
+                onPrev={handlePrev}
+                onNext={handleNext}
+                hasPrev={true}
+                hasNext={true}
             >
-                {modalContent}
+                {dashboardData[currentIndex].modalContent}
             </DetailModal>
         </>
     );
 }
 
 export default function DashboardSummary() {
-    const dashboardData = [
-        {
-            title: '이번 달 독서량',
-            value: '12권',
-            change: '+3권 ↑',
-            description: '지난 달 대비 33% 증가',
-            gradient: 'from-indigo-500 to-indigo-600',
-            modalContent: (
-                <div className="space-y-6">
-                    <div>
-                        <h4 className="font-semibold mb-4">월별 독서량 추이</h4>
-                        <div className="h-64">
-                            <Line data={readingData} options={commonOptions} />
-                        </div>
-                    </div>
-                    <div>
-                        <h4 className="font-semibold mb-2">최근 읽은 책</h4>
-                        <ul className="space-y-2">
-                            <li className="flex justify-between">
-                                <span>해리포터와 마법사의 돌</span>
-                                <span className="text-gray-500">2024.01.15</span>
-                            </li>
-                            <li className="flex justify-between">
-                                <span>어린왕자</span>
-                                <span className="text-gray-500">2024.01.12</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            )
-        },
-        {
-            title: '총 학습 시간',
-            value: '32시간',
-            change: '+5h ↑',
-            description: '일일 평균 1.2시간',
-            gradient: 'from-emerald-500 to-emerald-600',
-            modalContent: (
-                <div className="space-y-6">
-                    <div>
-                        <h4 className="font-semibold mb-4">주간 학습 시간</h4>
-                        <div className="h-64">
-                            <Bar data={studyTimeData} options={commonOptions} />
-                        </div>
-                    </div>
-                    <div>
-                        <h4 className="font-semibold mb-2">학습 통계</h4>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-emerald-50 p-4 rounded-lg">
-                                <p className="text-sm text-emerald-600">최장 학습 시간</p>
-                                <p className="text-2xl font-bold text-emerald-700">3.0시간</p>
-                            </div>
-                            <div className="bg-emerald-50 p-4 rounded-lg">
-                                <p className="text-sm text-emerald-600">주간 목표 달성</p>
-                                <p className="text-2xl font-bold text-emerald-700">85%</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )
-        },
-        {
-            title: '독해력 점수',
-            value: '82점',
-            change: '+5점 ↑',
-            description: '상위 15% 수준',
-            gradient: 'from-violet-500 to-violet-600',
-            modalContent: (
-                <div className="space-y-6">
-                    <div>
-                        <h4 className="font-semibold mb-4">영역별 독해력 분석</h4>
-                        <div className="h-64">
-                            <Radar data={comprehensionData} options={commonOptions} />
-                        </div>
-                    </div>
-                    <div>
-                        <h4 className="font-semibold mb-2">독해력 성장</h4>
-                        <div className="bg-violet-50 p-4 rounded-lg">
-                            <p className="text-sm text-violet-600">지난 달 대비 성장률</p>
-                            <p className="text-2xl font-bold text-violet-700">+12%</p>
-                        </div>
-                    </div>
-                </div>
-            )
-        },
-        {
-            title: '획득한 뱃지',
-            value: '8개',
-            change: 'New!',
-            description: '신규 뱃지 획득!',
-            gradient: 'from-amber-500 to-amber-600',
-            modalContent: (
-                <div className="space-y-6">
-                    <div>
-                        <h4 className="font-semibold mb-4">카테고리별 뱃지 현황</h4>
-                        <div className="h-64">
-                            <Doughnut data={badgeData} options={commonOptions} />
-                        </div>
-                    </div>
-                    <div>
-                        <h4 className="font-semibold mb-2">최근 획득한 뱃지</h4>
-                        <div className="bg-amber-50 p-4 rounded-lg">
-                            <p className="text-sm text-amber-600">독서 마라토너</p>
-                            <p className="text-lg text-amber-700">30일 연속 독서 달성</p>
-                        </div>
-                    </div>
-                </div>
-            )
-        }
-    ];
 
     return (
         <section className="bg-white pt-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="mb-8 text-center">
+                <div className="mb-8">
                     <div>
                         <h2 className="text-4xl font-extrabold text-gray-900">학습 현황</h2>
                         <p className="mt-3 text-xl font-semibold text-gray-600">오늘의 학습 진행 상황입니다</p>
@@ -293,7 +346,12 @@ export default function DashboardSummary() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {dashboardData.map((data, index) => (
-                        <DashboardCard key={index} {...data} />
+                        <DashboardCard
+                            key={index}
+                            {...data}
+                            index={index}
+                            totalCards={dashboardData.length}
+                        />
                     ))}
                 </div>
             </div>

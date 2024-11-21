@@ -1,0 +1,77 @@
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Book {
+  id          Int       @id @default(autoincrement())
+  title       String
+  author      String
+  coverImage  String
+  description String    @db.Text
+  category    String
+  level       String
+  rating      Float
+  reviewCount Int
+  tags        Tag[]
+  reviews     Review[]
+  statistics  BookStatistics?
+  bookmarks   Bookmark[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Bookmark {
+  id        Int      @id @default(autoincrement())
+  userId    String   // String 타입으로 변경
+  bookId    Int
+  createdAt DateTime @default(now())
+  book      Book     @relation(fields: [bookId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, bookId])
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  name      String?
+  bookmarks Bookmark[]
+  reviews   Review[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Tag {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  books     Book[]
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  rating    Int
+  bookId    Int
+  userId    String   // User id와 타입 맞춤
+  createdAt DateTime @default(now())
+
+  book      Book     @relation(fields: [bookId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model BookStatistics {
+  id            Int      @id @default(autoincrement())
+  bookId        Int      @unique
+  totalReaders  Int
+  avgReadTime   Int
+  completionRate Float
+  satisfaction  Int
+
+  book          Book     @relation(fields: [bookId], references: [id])
+}

@@ -3,6 +3,9 @@
 import { useEffect } from 'react';
 import RecentBooks from '@/components/dashboard/RecentBooks';
 import DashboardSummary from '@/components/dashboard/DashboardSummary';
+import LearningAnalysis from '@/components/dashboard/LearningAnalysis';
+import RecommendedBooks from '@/components/dashboard/RecommendedBooks';
+import CommunitySection from '@/components/dashboard/CommunitySection';
 
 export default function Dashboard() {
     // 페이지 타이틀 변경
@@ -19,13 +22,13 @@ export default function Dashboard() {
             <DashboardSummary />
 
             {/* 학습 분석 섹션 */}
-            {/*<LearningAnalysisGPT />*/}
+            <LearningAnalysis />
 
             {/* 추천 도서 섹션 */}
-            {/* <BookRecommendations /> */}
+            <RecommendedBooks />
 
             {/* 커뮤니티 섹션 */}
-            {/* <CommunitySection /> */}
+            <CommunitySection /> 
         </div>
     );
 }

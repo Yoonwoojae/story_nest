@@ -106,81 +106,189 @@ const recentBooks = [
 
 function RecentBookCard({ book }) {
     const [isHovered, setIsHovered] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
-        <div
-            className="relative group p-4"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-        >
-            <div className={`
-       relative w-60 h-80 rounded-lg overflow-hidden shadow-lg
-       transition-all duration-300 ease-in-out
-       ${isHovered ? 'transform scale-105 shadow-xl' : ''}
-     `}>
-                {/* 책 커버 이미지 */}
-                <Image
-                    src={book.cover}
-                    alt={book.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    priority
-                />
-
-                {/* 호버 시 나타나는 오버레이 정보 */}
+        <>
+            <div
+                className="relative group p-4"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
                 <div className={`
-         absolute inset-0 bg-black/70
-         flex flex-col justify-between p-4
-         opacity-0 transition-opacity duration-300
-         ${isHovered ? 'opacity-100' : ''}
-       `}>
-                    {/* 상단 정보 */}
-                    <div>
-                        <h3 className="font-bold text-lg text-white">{book.title}</h3>
-                        <p className="text-sm text-gray-300 mt-1">{book.genre} · {book.level}</p>
-                        <div className="bg-white/20 rounded px-2 py-1 text-white text-xs inline-block mt-2">
-                            {Math.floor(book.readingTime / 60)}시간 {book.readingTime % 60}분
-                        </div>
-                    </div>
+          relative w-60 h-80 rounded-lg overflow-hidden shadow-lg
+          transition-all duration-300 ease-in-out
+          ${isHovered ? 'transform scale-105 shadow-xl' : ''}
+        `}>
+                    {/* 책 커버 이미지 */}
+                    <Image
+                        src={book.cover}
+                        alt={book.title}
+                        fill
+                        className="object-cover"
+                        priority
+                    />
 
-                    {/* 중간 정보 */}
-                    <div className="space-y-2">
-                        <p className="text-sm text-gray-300">
-                            {book.currentPage} / {book.totalPages} 페이지
-                        </p>
-                        <div className="text-sm text-gray-300 line-clamp-3">
-                            {book.description}
-                        </div>
-                    </div>
-
-                    {/* 하단 정보 */}
-                    <div className="space-y-4">
-                        {/* 진행률 바 */}
+                    {/* 오버레이 정보 */}
+                    <div className={`
+            absolute inset-0 bg-black/70
+            flex flex-col justify-between p-4
+            opacity-0 transition-opacity duration-300
+            ${isHovered ? 'opacity-100' : ''}
+          `}>
                         <div>
-                            <div className="relative w-full h-2 bg-gray-200/30 rounded-full overflow-hidden">
-                                <div
-                                    className="absolute top-0 left-0 h-full bg-indigo-600 rounded-full transition-all duration-500"
-                                    style={{ width: `${book.progress}%` }}
-                                />
-                            </div>
-                            <div className="flex justify-between items-center mt-1">
-                                <p className="text-white text-sm">{book.progress}%</p>
-                                <p className="text-white text-sm">{formatDate(book.lastRead)}</p>
-                            </div>
+                            <h3 className="text-xl font-bold text-white">{book.title}</h3>
+                            <p className="text-sm text-gray-300 mt-1">{book.author}</p>
                         </div>
 
-                        {/* 버튼들 */}
-                        <div className="flex gap-2">
-                            <button className="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-md
-                              hover:bg-indigo-500 transition-colors text-sm font-semibold">
+                        <div className="space-y-4">
+                            <div>
+                                <div className="w-full bg-white/20 rounded-full h-2">
+                                    <div
+                                        className="bg-indigo-600 h-2 rounded-full"
+                                        style={{ width: `${book.progress}%` }}
+                                    />
+                                </div>
+                                <div className="flex justify-between text-sm text-white mt-1">
+                                    <span>{book.progress}%</span>
+                                    <span>{book.currentPage} / {book.totalPages} 페이지</span>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setIsModalOpen(true)}
+                                    className="flex-1 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg
+                           transition-colors text-sm font-medium backdrop-blur-sm"
+                                >
+                                    상세보기
+                                </button>
+                                <button
+                                    className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg
+                           transition-colors text-sm font-medium"
+                                >
+                                    이어읽기
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 상세 정보 모달 */}
+            <BookDetailModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                book={book}
+            />
+        </>
+    );
+}
+
+// 상세 정보 모달 컴포넌트
+function BookDetailModal({ isOpen, onClose, book }) {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+            {/* 배경 오버레이 */}
+            <div
+                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                onClick={onClose}
+            />
+
+            {/* 모달 컨텐츠 */}
+            <div className="relative bg-white rounded-2xl w-full max-w-3xl m-4 shadow-xl overflow-hidden">
+                <div className="flex">
+                    {/* 책 커버 영역 */}
+                    <div className="w-1/3 p-8 bg-gray-50">
+                        <div className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-lg">
+                            <Image
+                                src={book.cover}
+                                alt={book.title}
+                                fill
+                                className="object-cover"
+                            />
+                        </div>
+                        <div className="mt-6 space-y-4">
+                            <div>
+                                <div className="text-sm text-gray-500 mb-1">진행률</div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                        className="bg-indigo-600 h-2 rounded-full transition-all duration-500"
+                                        style={{ width: `${book.progress}%` }}
+                                    />
+                                </div>
+                                <div className="flex justify-between text-sm mt-1">
+                                    <span>{book.progress}%</span>
+                                    <span>{book.currentPage} / {book.totalPages} 페이지</span>
+                                </div>
+                            </div>
+                            <button className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-500 transition-colors">
                                 이어읽기
                             </button>
-                            <button className="flex-1 bg-white/10 text-white px-4 py-2 rounded-md
-                              hover:bg-white/20 transition-colors text-sm font-semibold
-                              backdrop-blur-sm">
-                                상세정보
+                        </div>
+                    </div>
+
+                    {/* 상세 정보 영역 */}
+                    <div className="flex-1 p-8">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <h3 className="text-2xl font-bold text-gray-900">{book.title}</h3>
+                                <p className="text-gray-500 mt-1">{book.author}</p>
+                            </div>
+                            <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
                             </button>
+                        </div>
+
+                        <div className="mt-6 grid grid-cols-2 gap-4">
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <div className="text-sm text-gray-500">최근 읽은 시간</div>
+                                <div className="text-lg font-semibold mt-1">{book.lastReadTime || '2시간 전'}</div>
+                            </div>
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <div className="text-sm text-gray-500">누적 읽은 시간</div>
+                                <div className="text-lg font-semibold mt-1">{book.totalReadTime || '8시간 30분'}</div>
+                            </div>
+                        </div>
+
+                        <div className="mt-6">
+                            <h4 className="font-semibold text-gray-900 mb-2">책 소개</h4>
+                            <p className="text-gray-600 text-sm leading-relaxed">
+                                {book.description}
+                            </p>
+                        </div>
+
+                        <div className="mt-6">
+                            <h4 className="font-semibold text-gray-900 mb-2">독서 노트</h4>
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <textarea
+                                    className="w-full bg-transparent border-0 resize-none focus:ring-0 text-sm"
+                                    placeholder="독서 중 메모하고 싶은 내용을 기록해보세요."
+                                    rows="4"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="mt-6">
+                            <h4 className="font-semibold text-gray-900 mb-2">읽기 통계</h4>
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="bg-gray-50 p-4 rounded-lg text-center">
+                                    <div className="text-sm text-gray-500">평균 독서 시간</div>
+                                    <div className="text-lg font-semibold mt-1">32분</div>
+                                </div>
+                                <div className="bg-gray-50 p-4 rounded-lg text-center">
+                                    <div className="text-sm text-gray-500">독서 횟수</div>
+                                    <div className="text-lg font-semibold mt-1">15회</div>
+                                </div>
+                                <div className="bg-gray-50 p-4 rounded-lg text-center">
+                                    <div className="text-sm text-gray-500">완독까지</div>
+                                    <div className="text-lg font-semibold mt-1">2시간</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -260,7 +368,7 @@ export default function RecentBooks() {
         <section className="bg-white pt-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* 섹션 타이틀 */}
-                <div className="mb-8 text-center">
+                <div className="mb-8">
                     {/* 섹션 타이틀을 더 크고 명확하게 수정 */}
                     <div>
                         <h2 className="text-4xl font-extrabold text-gray-900">최근 도서</h2>
