@@ -9,13 +9,10 @@ export function useComprehension(originalContent) {
     const [answers, setAnswers] = useState({});
 
     // 이해도 평가
-    const evaluateComprehension = useCallback((text) => {
-        if (!text.trim()) return null;
-
-        const result = analyzeText(text, originalContent);
-        setEvaluation(result);
-        return result;
-    }, [originalContent]);
+    const evaluateComprehension = (text) => {
+        const plainContent = stripHtml(currentContent);
+        return analyzeText(text, plainContent);
+    };
 
     // 퀴즈 생성 및 평가
     const initializeQuiz = useCallback(() => {

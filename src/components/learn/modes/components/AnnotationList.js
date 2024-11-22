@@ -1,6 +1,6 @@
 // src/components/learn/modes/components/AnnotationList.js
 import { Search, X } from 'lucide-react';
-
+import AnnotationCard from '@/components/learn/modes/components/AnnotationCard';
 export default function AnnotationList({
     annotations,
     searchTerm,

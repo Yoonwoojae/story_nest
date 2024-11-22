@@ -174,23 +174,54 @@ const evaluateMainIdeaAnswer = (answer, keyPoints) => {
 };
 
 const evaluateMultiSelectAnswer = (selected, correct) => {
-    if (!selected || selected.length === 0) {
-        return { score: 0, feedback: '답을 선택해주세요.' };
+    // 답안이 없거나 배열이 아닌 경우 처리
+    if (!selected || !Array.isArray(selected)) {
+        return {
+            score: 0,
+            feedback: '답을 선택해주세요.'
+        };
     }
 
+    // 정답도 배열이 아닌 경우 처리
+    if (!Array.isArray(correct)) {
+        console.error('Correct answers should be an array');
+        return {
+            score: 0,
+            feedback: '문제 구성에 오류가 있습니다.'
+        };
+    }
+
+    // 정답 개수와 오답 개수 계산
     const correctCount = selected.filter(item => correct.includes(item)).length;
     const incorrectCount = selected.filter(item => !correct.includes(item)).length;
 
-    const score = Math.max(0, (correctCount / correct.length * 100) - (incorrectCount * 20));
+    // 총점 계산 (정답 비율에서 오답 개수만큼 감점)
+    let score = Math.max(
+        0,
+        (correctCount / correct.length * 100) - (incorrectCount * 20)
+    );
+    score = Math.min(100, score); // 100점 초과 방지
 
+    // 피드백 생성
     let feedback = '';
     if (score === 100) {
         feedback = '모든 답을 정확하게 선택했습니다!';
     } else if (score >= 70) {
-        feedback = '대부분의 답을 맞췄지만, 일부 답을 더 확인해보세요.';
+        feedback = `정답 ${correctCount}개를 맞췄지만, 일부 오답이 있습니다.`;
+    } else if (correctCount > 0) {
+        feedback = '일부만 맞았습니다. 다시 한번 검토해보세요.';
     } else {
-        feedback = '주요 개념들을 다시 한 번 검토해보세요.';
+        feedback = '정답이 없습니다. 다시 시도해보세요.';
     }
+
+    console.log('Evaluation:', { // 디버깅용
+        selected,
+        correct,
+        correctCount,
+        incorrectCount,
+        score,
+        feedback
+    });
 
     return { score, feedback };
 };

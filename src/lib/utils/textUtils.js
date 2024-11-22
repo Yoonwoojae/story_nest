@@ -1,5 +1,6 @@
+// src/lib/utils/textUtils.js
 export const stripHtml = (html) => {
-    const temp = document.createElement('div');
-    temp.innerHTML = html;
-    return temp.textContent || temp.innerText || '';
+    if (!html) return '';
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || '';
 };

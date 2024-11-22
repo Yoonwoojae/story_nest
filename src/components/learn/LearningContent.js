@@ -12,9 +12,16 @@ export default function LearningContent({
     autoScroll,
     scrollSpeed,
     fontSize,
+    setFontSize,
     isCompleted,
     onComplete,
-    onProgressUpdate
+    onProgressUpdate,
+    categories,
+    activeCategory,
+    setActiveCategory,
+    isRecording,
+    onRecordingToggle,
+    audioUrl
 }) {
     const [readingMode, setReadingMode] = useState('normal');
 
@@ -26,7 +33,13 @@ export default function LearningContent({
             fontSize,
             isCompleted,
             onComplete,
-            onProgressUpdate
+            onProgressUpdate,
+            categories,
+            activeCategory,
+            setActiveCategory,
+            isRecording,
+            onRecordingToggle,
+            audioUrl
         };
 
         switch (readingMode) {
@@ -43,9 +56,8 @@ export default function LearningContent({
 
     return (
         <div>
-            {/* 상단 고정 영역 */}
             <div className="sticky top-16 bg-white z-10 pb-4">
-                <div className="flex justify-between items-center mb-4 pt-6"> {/* 상단 여백 추가 */}
+                <div className="flex justify-between items-center mb-4 pt-6">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">{bookData.title}</h1>
                         <p className="text-sm text-gray-500 mt-1">저자: {bookData.author}</p>
@@ -91,8 +103,9 @@ export default function LearningContent({
                 </div>
             </div>
 
-            {/* 콘텐츠 영역 */}
-            {getCurrentMode()}
+            <div className="mt-4">
+                {getCurrentMode()}
+            </div>
         </div>
     );
 }

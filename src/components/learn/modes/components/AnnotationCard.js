@@ -1,4 +1,7 @@
 // src/components/learn/modes/components/AnnotationCard.js
+import { defaultCategories } from '@/components/learn/constants/annotationCategories';
+import {  X } from 'lucide-react';
+
 export default function AnnotationCard({
     annotation,
     onUpdate,
